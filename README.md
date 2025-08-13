@@ -238,6 +238,7 @@ The application has been thoroughly performance tested:
 - **Scalability**: Linear performance scaling demonstrated
 
 See [PERFORMANCE-RESULTS.md](./PERFORMANCE-RESULTS.md) for detailed benchmarks.
+![Uploading Screenshot 2025-08-13 at 23.50.45.png…]()
 
 ## 🤝 Contributing
 
