@@ -31,7 +31,6 @@ This document outlines the refactoring of the original monolithic React componen
 - **Custom Hooks**: Extracted meaningful state logic into reusable hooks:
   - `useTreeState` - Tree expansion and selection state
   - `useNodeUpdate` - Node modification logic
-  - `useComponentLabel` - Component label computation
 - **Simple Memoization**: Direct `useMemo` for simple computed values instead of unnecessary wrapper hooks
 - **State Locality**: State moved closer to where it's used
 
@@ -85,8 +84,7 @@ src/
 │   ├── ErrorBoundary.tsx       # Error boundary wrapper
 │   └── CSSInspector.tsx        # Original CSS inspector (updated)
 ├── hooks/
-│   ├── useAppState.ts          # State management hooks
-│   └── useComponentLabel.ts    # Component label hook
+│   └── useAppState.ts          # State management hooks
 ├── types/
 │   └── index.ts                # Shared TypeScript interfaces
 ├── constants/

@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { TreeNodeProps } from '../types';
 import { CONSTANTS, ARIA_LABELS } from '../constants/appConstants';
-import { useComponentLabel } from '../hooks/useComponentLabel';
 
 const TreeNodeComponent: React.FC<TreeNodeProps> = ({
   nodeId,
@@ -27,7 +26,16 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({
   const isSelected = selectedId === nodeId;
   const isExpanded = expandedNodes.has(nodeId);
   const hasChildren = treeNode.children.length > 0;
-  const componentLabel = useComponentLabel(components, nodeId);
+  
+  // Simple inline component label lookup instead of unnecessary hook wrapper
+  const componentLabel = useMemo(() => {
+    for (const [label, nodeIds] of components.entries()) {
+      if (nodeIds.includes(nodeId)) {
+        return label;
+      }
+    }
+    return null;
+  }, [components, nodeId]);
 
   const handleNodeClick = () => {
     onSelect(nodeId);
