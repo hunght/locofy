@@ -276,7 +276,7 @@ describe('detectComponents', () => {
       ]);
 
       const image1 = createNode('img1', 'Image', 50, 20); // Same size as button but different type
-      const input2 = createNode('input2', 'Input', 100, 25);
+      const input2 = createNode('input2', 'Input', 120, 30); // Different size from input1
       const container2 = createNode('container2', 'Div', 200, 100, [
         image1,
         input2,
@@ -357,26 +357,33 @@ describe('detectComponents', () => {
   describe('stress test with large dataset', () => {
     it('should detect components in large e-commerce layout', () => {
       const startTime = performance.now();
-      
+
       // Use the stress test dataset with 220+ nodes
-      const { nodeMap, treeData } = convertToOptimizedStructure(stressTestMockData);
+      const { nodeMap, treeData } =
+        convertToOptimizedStructure(stressTestMockData);
       const components = detectComponents(nodeMap, treeData);
-      
+
       const endTime = performance.now();
       const processingTime = endTime - startTime;
 
       console.log('🚀 Large Dataset Component Detection Results:');
       console.log(`  📊 Total nodes processed: ${nodeMap.size}`);
       console.log(`  🎯 Components detected: ${components.size}`);
-      console.log(`  ⚡ Processing time: ${Math.round(processingTime * 100) / 100}ms`);
-      console.log(`  📈 Performance: ${Math.round((processingTime / nodeMap.size) * 100) / 100}ms per node`);
+      console.log(
+        `  ⚡ Processing time: ${Math.round(processingTime * 100) / 100}ms`
+      );
+      console.log(
+        `  📈 Performance: ${
+          Math.round((processingTime / nodeMap.size) * 100) / 100
+        }ms per node`
+      );
 
       // Verify we processed a large dataset
       expect(nodeMap.size).toBeGreaterThan(200);
-      
+
       // Should detect multiple component types in the e-commerce layout
       expect(components.size).toBeGreaterThan(3);
-      
+
       // Performance should be reasonable (under 50ms for 220+ nodes)
       expect(processingTime).toBeLessThan(50);
 
@@ -386,62 +393,91 @@ describe('detectComponents', () => {
         const firstNode = nodeMap.get(nodeIds[0]);
         const componentType = firstNode?.type;
         const dimensions = `${firstNode?.width}x${firstNode?.height}`;
-        console.log(`  ${componentName}: ${nodeIds.length} instances of ${componentType} (${dimensions})`);
-        
+        console.log(
+          `  ${componentName}: ${nodeIds.length} instances of ${componentType} (${dimensions})`
+        );
+
         // Log some example node IDs (first 3)
         const exampleIds = nodeIds.slice(0, 3).join(', ');
-        console.log(`    Examples: ${exampleIds}${nodeIds.length > 3 ? '...' : ''}`);
+        console.log(
+          `    Examples: ${exampleIds}${nodeIds.length > 3 ? '...' : ''}`
+        );
       });
 
       // Specific expectations for the stress test dataset
-      
+
       // Should detect navigation buttons (8 instances)
-      const navButtonComponent = Array.from(components.values()).find(nodeIds => {
-        const firstNode = nodeMap.get(nodeIds[0]);
-        return firstNode?.type === 'Button' && firstNode?.width === 120 && firstNode?.height === 30;
-      });
+      const navButtonComponent = Array.from(components.values()).find(
+        (nodeIds) => {
+          const firstNode = nodeMap.get(nodeIds[0]);
+          return (
+            firstNode?.type === 'Button' &&
+            firstNode?.width === 120 &&
+            firstNode?.height === 30
+          );
+        }
+      );
       expect(navButtonComponent).toBeDefined();
       expect(navButtonComponent!.length).toBe(8);
 
       // Should detect product cards (30 instances)
-      const productCardComponent = Array.from(components.values()).find(nodeIds => {
-        const firstNode = nodeMap.get(nodeIds[0]);
-        return firstNode?.type === 'Div' && firstNode?.width === 180 && firstNode?.height === 260;
-      });
+      const productCardComponent = Array.from(components.values()).find(
+        (nodeIds) => {
+          const firstNode = nodeMap.get(nodeIds[0]);
+          return (
+            firstNode?.type === 'Div' &&
+            firstNode?.width === 180 &&
+            firstNode?.height === 260
+          );
+        }
+      );
       expect(productCardComponent).toBeDefined();
       expect(productCardComponent!.length).toBe(30);
 
       // Should detect sidebar widgets (12 instances)
-      const sidebarWidgetComponent = Array.from(components.values()).find(nodeIds => {
-        const firstNode = nodeMap.get(nodeIds[0]);
-        return firstNode?.type === 'Div' && firstNode?.width === 240 && firstNode?.height === 120;
-      });
+      const sidebarWidgetComponent = Array.from(components.values()).find(
+        (nodeIds) => {
+          const firstNode = nodeMap.get(nodeIds[0]);
+          return (
+            firstNode?.type === 'Div' &&
+            firstNode?.width === 240 &&
+            firstNode?.height === 120
+          );
+        }
+      );
       expect(sidebarWidgetComponent).toBeDefined();
       expect(sidebarWidgetComponent!.length).toBe(12);
 
       // Should detect social media icons (6 instances)
-      const socialIconComponent = Array.from(components.values()).find(nodeIds => {
-        const firstNode = nodeMap.get(nodeIds[0]);
-        return firstNode?.type === 'Button' && firstNode?.width === 40 && firstNode?.height === 40;
-      });
+      const socialIconComponent = Array.from(components.values()).find(
+        (nodeIds) => {
+          const firstNode = nodeMap.get(nodeIds[0]);
+          return (
+            firstNode?.type === 'Button' &&
+            firstNode?.width === 40 &&
+            firstNode?.height === 40
+          );
+        }
+      );
       expect(socialIconComponent).toBeDefined();
       expect(socialIconComponent!.length).toBe(6);
     });
 
     it('should demonstrate hierarchy prevention in large dataset', () => {
-      const { nodeMap, treeData } = convertToOptimizedStructure(stressTestMockData);
+      const { nodeMap, treeData } =
+        convertToOptimizedStructure(stressTestMockData);
       const components = detectComponents(nodeMap, treeData);
 
       // Count nodes that are part of components
       const nodesInComponents = new Set<string>();
-      components.forEach(nodeIds => {
-        nodeIds.forEach(id => nodesInComponents.add(id));
+      components.forEach((nodeIds) => {
+        nodeIds.forEach((id) => nodesInComponents.add(id));
       });
 
       // Count nodes that have children in components (to verify hierarchy prevention)
       let childrenOfComponentNodes = 0;
-      components.forEach(nodeIds => {
-        nodeIds.forEach(nodeId => {
+      components.forEach((nodeIds) => {
+        nodeIds.forEach((nodeId) => {
           const treeNode = treeData.get(nodeId);
           if (treeNode) {
             childrenOfComponentNodes += treeNode.children.length;
@@ -453,13 +489,19 @@ describe('detectComponents', () => {
       console.log(`  Total nodes: ${nodeMap.size}`);
       console.log(`  Nodes in components: ${nodesInComponents.size}`);
       console.log(`  Children of component nodes: ${childrenOfComponentNodes}`);
-      console.log(`  Non-component nodes: ${nodeMap.size - nodesInComponents.size}`);
-      console.log(`  Hierarchy prevention efficiency: ${Math.round((1 - nodesInComponents.size / nodeMap.size) * 100)}%`);
+      console.log(
+        `  Non-component nodes: ${nodeMap.size - nodesInComponents.size}`
+      );
+      console.log(
+        `  Hierarchy prevention efficiency: ${Math.round(
+          (1 - nodesInComponents.size / nodeMap.size) * 100
+        )}%`
+      );
 
       // Verify hierarchy prevention is working
       // Most nodes should NOT be in components (prevents over-segmentation)
       expect(nodesInComponents.size).toBeLessThan(nodeMap.size * 0.5); // Less than 50% of nodes in components
-      
+
       // Should have detected meaningful components without over-segmentation
       expect(components.size).toBeLessThan(20); // Reasonable number of component types
       expect(components.size).toBeGreaterThan(3); // But enough to be meaningful
@@ -471,10 +513,11 @@ describe('detectComponents', () => {
 
       for (let i = 0; i < runs; i++) {
         const startTime = performance.now();
-        const { nodeMap, treeData } = convertToOptimizedStructure(stressTestMockData);
+        const { nodeMap, treeData } =
+          convertToOptimizedStructure(stressTestMockData);
         detectComponents(nodeMap, treeData); // We only need timing, not the result
         const endTime = performance.now();
-        
+
         times.push(endTime - startTime);
       }
 
@@ -486,7 +529,9 @@ describe('detectComponents', () => {
       console.log(`  Average time: ${Math.round(avgTime * 100) / 100}ms`);
       console.log(`  Min time: ${Math.round(minTime * 100) / 100}ms`);
       console.log(`  Max time: ${Math.round(maxTime * 100) / 100}ms`);
-      console.log(`  Variance: ${Math.round((maxTime - minTime) * 100) / 100}ms`);
+      console.log(
+        `  Variance: ${Math.round((maxTime - minTime) * 100) / 100}ms`
+      );
 
       // Performance should be consistent
       expect(avgTime).toBeLessThan(50); // Average under 50ms
@@ -494,38 +539,49 @@ describe('detectComponents', () => {
     });
 
     it('should validate component signatures with nested children', () => {
-      const { nodeMap, treeData } = convertToOptimizedStructure(stressTestMockData);
+      const { nodeMap, treeData } =
+        convertToOptimizedStructure(stressTestMockData);
       const components = detectComponents(nodeMap, treeData);
 
       // Find the product card component (most complex with nested children)
-      const productCardComponent = Array.from(components.values()).find(nodeIds => {
-        const firstNode = nodeMap.get(nodeIds[0]);
-        return firstNode?.type === 'Div' && firstNode?.width === 180 && firstNode?.height === 260;
-      });
+      const productCardComponent = Array.from(components.values()).find(
+        (nodeIds) => {
+          const firstNode = nodeMap.get(nodeIds[0]);
+          return (
+            firstNode?.type === 'Div' &&
+            firstNode?.width === 180 &&
+            firstNode?.height === 260
+          );
+        }
+      );
 
       expect(productCardComponent).toBeDefined();
       expect(productCardComponent!.length).toBe(30);
 
       // Verify all product cards have the same structure
-      productCardComponent!.forEach(nodeId => {
+      productCardComponent!.forEach((nodeId) => {
         const treeNode = treeData.get(nodeId);
         expect(treeNode).toBeDefined();
-        
+
         // Each product card should have exactly 4 children: image, title, price, button
         expect(treeNode!.children.length).toBe(4);
-        
+
         // Verify children types match expected structure
-        const childTypes = treeNode!.children.map(childId => {
-          const childNode = nodeMap.get(childId);
-          return childNode?.type;
-        }).sort();
-        
+        const childTypes = treeNode!.children
+          .map((childId) => {
+            const childNode = nodeMap.get(childId);
+            return childNode?.type;
+          })
+          .sort();
+
         expect(childTypes).toEqual(['Button', 'Div', 'Div', 'Image']);
       });
 
       console.log('\n🧩 Component Structure Validation:');
       console.log(`  Product cards detected: ${productCardComponent!.length}`);
-      console.log(`  Each card has 4 children: Image, Title (Div), Price (Div), Button`);
+      console.log(
+        `  Each card has 4 children: Image, Title (Div), Price (Div), Button`
+      );
       console.log(`  ✅ All product cards have identical structure`);
     });
   });

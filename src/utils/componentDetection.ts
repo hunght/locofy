@@ -134,5 +134,14 @@ export const detectComponents = (
     }
   });
 
-  return filteredComponents;
+  // Reassign sequential component names after filtering
+  const finalComponents = new Map<string, string[]>();
+  let finalComponentIndex = 1;
+
+  filteredComponents.forEach((nodeIds) => {
+    const sequentialName = `C${finalComponentIndex++}`;
+    finalComponents.set(sequentialName, nodeIds);
+  });
+
+  return finalComponents;
 };
