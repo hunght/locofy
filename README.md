@@ -1,4 +1,4 @@
-# Frontend Coding Test - UI Component Tree Inspector
+# Frontend Coding Test
 
 A sophisticated React TypeScript application for visualizing and inspecting UI component hierarchies with intelligent component detection and real-time CSS editing capabilities.
 
