@@ -116,7 +116,6 @@ The application will be available at `http://localhost:3000` (or next available 
 ### Development Guidelines
 
 - **[GitHub Copilot Instructions](./.github/copilot-instructions.md)**: Comprehensive development guidelines and best practices
-- **[Code Quality Standards](./.github/COPILOT_INSTRUCTIONS)**: Specific coding standards and abstraction rules
 
 ## 🏗️ Architecture Highlights
 
