@@ -2,7 +2,39 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { ChevronRight, ChevronDown, Eye } from 'lucide-react';
 import CSSInspector, { type Node } from './src/components/CSSInspector';
 
-// Mock data for testing
+// Optimized tree structure - only keeps relationships
+interface TreeNode {
+  id: string;
+  children: string[];
+}
+
+// Helper function to convert mock data to optimized structure
+const convertToOptimizedStructure = (mockData: Node) => {
+  const nodeMap = new Map<string, Node>();
+  const treeData = new Map<string, TreeNode>();
+
+  const traverse = (node: Node) => {
+    // Store node data in map
+    nodeMap.set(node.id, {
+      ...node,
+      children: [], // Remove children from node data
+    });
+
+    // Store tree structure separately
+    treeData.set(node.id, {
+      id: node.id,
+      children: node.children.map((child) => child.id),
+    });
+
+    // Recursively process children
+    node.children.forEach(traverse);
+  };
+
+  traverse(mockData);
+  return { nodeMap, treeData };
+};
+
+// Mock data for testing (keeping original structure for initial conversion)
 const mockData: Node = {
   id: '1',
   x: 0,
@@ -142,28 +174,27 @@ const mockData: Node = {
   ],
 };
 
-// Component detection logic
-const detectComponents = (_nodes: Node[]): Map<string, string[]> => {
+// Component detection logic - updated to work with optimized structure
+const detectComponents = (
+  nodeMap: Map<string, Node>,
+  treeData: Map<string, TreeNode>
+): Map<string, string[]> => {
   const components = new Map<string, string[]>();
   const nodesBySignature = new Map<string, Node[]>();
 
-  const traverse = (node: Node) => {
+  // Get all node IDs and process them
+  Array.from(nodeMap.keys()).forEach((nodeId) => {
+    const node = nodeMap.get(nodeId)!;
+    const treeNode = treeData.get(nodeId)!;
+
     // Create signature based on type, dimensions, and structure
-    const signature = `${node.type}_${node.width}x${node.height}_${node.children.length}`;
+    const signature = `${node.type}_${node.width}x${node.height}_${treeNode.children.length}`;
 
     if (!nodesBySignature.has(signature)) {
       nodesBySignature.set(signature, []);
     }
     nodesBySignature.get(signature)!.push(node);
-
-    node.children.forEach(traverse);
-  };
-
-  const getAllNodes = (node: Node): Node[] => {
-    return [node, ...node.children.flatMap(getAllNodes)];
-  };
-
-  getAllNodes(mockData).forEach(traverse);
+  });
 
   let componentIndex = 1;
   nodesBySignature.forEach((nodes, _signature) => {
@@ -179,8 +210,10 @@ const detectComponents = (_nodes: Node[]): Map<string, string[]> => {
   return components;
 };
 
-const TreeNode: React.FC<{
-  node: Node;
+const TreeNodeComponent: React.FC<{
+  nodeId: string;
+  nodeMap: Map<string, Node>;
+  treeData: Map<string, TreeNode>;
   level: number;
   selectedId: string | null;
   expandedNodes: Set<string>;
@@ -188,7 +221,9 @@ const TreeNode: React.FC<{
   onSelect: (id: string) => void;
   onToggle: (id: string) => void;
 }> = ({
-  node,
+  nodeId,
+  nodeMap,
+  treeData,
   level,
   selectedId,
   expandedNodes,
@@ -196,19 +231,22 @@ const TreeNode: React.FC<{
   onSelect,
   onToggle,
 }) => {
-  const isSelected = selectedId === node.id;
-  const isExpanded = expandedNodes.has(node.id);
-  const hasChildren = node.children.length > 0;
+  const node = nodeMap.get(nodeId)!;
+  const treeNode = treeData.get(nodeId)!;
+
+  const isSelected = selectedId === nodeId;
+  const isExpanded = expandedNodes.has(nodeId);
+  const hasChildren = treeNode.children.length > 0;
 
   // Find component label for this node
   const componentLabel = useMemo(() => {
     for (const [label, nodeIds] of components.entries()) {
-      if (nodeIds.includes(node.id)) {
+      if (nodeIds.includes(nodeId)) {
         return label;
       }
     }
     return null;
-  }, [components, node.id]);
+  }, [components, nodeId]);
 
   return (
     <div>
@@ -217,13 +255,13 @@ const TreeNode: React.FC<{
           isSelected ? 'bg-blue-100 border-l-2 border-blue-500' : ''
         }`}
         style={{ paddingLeft: `${level * 20 + 8}px` }}
-        onClick={() => onSelect(node.id)}
+        onClick={() => onSelect(nodeId)}
       >
         {hasChildren && (
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onToggle(node.id);
+              onToggle(nodeId);
             }}
             className="mr-1 p-1 hover:bg-gray-200 rounded"
           >
@@ -251,10 +289,12 @@ const TreeNode: React.FC<{
 
       {hasChildren && isExpanded && (
         <div>
-          {node.children.map((child) => (
-            <TreeNode
-              key={child.id}
-              node={child}
+          {treeNode.children.map((childId) => (
+            <TreeNodeComponent
+              key={childId}
+              nodeId={childId}
+              nodeMap={nodeMap}
+              treeData={treeData}
               level={level + 1}
               selectedId={selectedId}
               expandedNodes={expandedNodes}
@@ -270,11 +310,15 @@ const TreeNode: React.FC<{
 };
 
 const NodeRenderer: React.FC<{
-  node: Node;
+  nodeId: string;
+  nodeMap: Map<string, Node>;
+  treeData: Map<string, TreeNode>;
   selectedId: string | null;
   onSelect: (id: string) => void;
-}> = ({ node, selectedId, onSelect }) => {
-  const isSelected = selectedId === node.id;
+}> = ({ nodeId, nodeMap, treeData, selectedId, onSelect }) => {
+  const node = nodeMap.get(nodeId)!;
+  const treeNode = treeData.get(nodeId)!;
+  const isSelected = selectedId === nodeId;
 
   const baseStyle: React.CSSProperties = {
     position: 'absolute',
@@ -344,7 +388,7 @@ const NodeRenderer: React.FC<{
         style={baseStyle}
         onClick={(e) => {
           e.stopPropagation();
-          onSelect(node.id);
+          onSelect(nodeId);
         }}
       >
         {renderNodeContent()}
@@ -366,10 +410,12 @@ const NodeRenderer: React.FC<{
           </div>
         )}
       </div>
-      {node.children.map((child) => (
+      {treeNode.children.map((childId) => (
         <NodeRenderer
-          key={child.id}
-          node={child}
+          key={childId}
+          nodeId={childId}
+          nodeMap={nodeMap}
+          treeData={treeData}
           selectedId={selectedId}
           onSelect={onSelect}
         />
@@ -379,25 +425,33 @@ const NodeRenderer: React.FC<{
 };
 
 export default function App() {
-  const [data, setData] = useState<Node>(mockData);
+  // Initialize optimized state structure
+  const initialStructure = useMemo(
+    () => convertToOptimizedStructure(mockData),
+    []
+  );
+
+  const [nodeMap, setNodeMap] = useState<Map<string, Node>>(
+    initialStructure.nodeMap
+  );
+  const [treeData, setTreeData] = useState<Map<string, TreeNode>>(
+    initialStructure.treeData
+  );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
     new Set(['1', '2', '5', '8'])
   );
 
-  const components = useMemo(() => detectComponents([data]), [data]);
+  const components = useMemo(
+    () => detectComponents(nodeMap, treeData),
+    [nodeMap, treeData]
+  );
 
   const selectedNode = useMemo(() => {
-    const findNode = (node: Node): Node | null => {
-      if (node.id === selectedId) return node;
-      for (const child of node.children) {
-        const found = findNode(child);
-        if (found) return found;
-      }
-      return null;
-    };
-    return findNode(data);
-  }, [data, selectedId]);
+    return selectedId ? nodeMap.get(selectedId) || null : null;
+  }, [nodeMap, selectedId]);
+
+  const rootNode = nodeMap.get('1')!;
 
   const handleToggle = useCallback((id: string) => {
     setExpandedNodes((prev) => {
@@ -412,17 +466,18 @@ export default function App() {
   }, []);
 
   const handleUpdateNode = useCallback((id: string, updates: Partial<Node>) => {
-    const updateNodeRecursively = (node: Node): Node => {
-      if (node.id === id) {
-        return { ...node, ...updates };
+    setNodeMap((prevNodeMap) => {
+      const newNodeMap = new Map(prevNodeMap);
+      const existingNode = newNodeMap.get(id);
+      if (existingNode) {
+        console.log('Updating node:', existingNode);
+        console.log('With updates:', updates);
+        newNodeMap.set(id, { ...existingNode, ...updates });
+      } else {
+        console.warn(`Node with ID ${id} not found for update.`);
       }
-      return {
-        ...node,
-        children: node.children.map(updateNodeRecursively),
-      };
-    };
-
-    setData((prev) => updateNodeRecursively(prev));
+      return newNodeMap;
+    });
   }, []);
 
   return (
@@ -437,8 +492,10 @@ export default function App() {
           </p>
         </div>
         <div className="flex-1 overflow-auto">
-          <TreeNode
-            node={data}
+          <TreeNodeComponent
+            nodeId="1"
+            nodeMap={nodeMap}
+            treeData={treeData}
             level={0}
             selectedId={selectedId}
             expandedNodes={expandedNodes}
@@ -461,14 +518,16 @@ export default function App() {
           <div
             className="relative bg-white border border-gray-300"
             style={{
-              width: data.width,
-              height: data.height,
+              width: rootNode.width,
+              height: rootNode.height,
               minHeight: 600,
             }}
             onClick={() => setSelectedId(null)}
           >
             <NodeRenderer
-              node={data}
+              nodeId="1"
+              nodeMap={nodeMap}
+              treeData={treeData}
               selectedId={selectedId}
               onSelect={setSelectedId}
             />
@@ -498,6 +557,12 @@ export default function App() {
                   <strong>Node Type:</strong> {selectedNode.type}
                 </div>
                 <div>
+                  <strong>Children IDs:</strong>{' '}
+                  {JSON.stringify(
+                    treeData.get(selectedNode.id)?.children || []
+                  )}
+                </div>
+                <div>
                   <strong>Raw Node Data:</strong>
                 </div>
                 <pre className="bg-white p-2 rounded text-xs overflow-auto max-h-32">
@@ -506,6 +571,10 @@ export default function App() {
                 <button
                   onClick={() => {
                     console.log('Selected Node:', selectedNode);
+                    console.log(
+                      'Tree Structure:',
+                      treeData.get(selectedNode.id)
+                    );
                     alert(
                       `Node data logged to console. Check developer tools.`
                     );

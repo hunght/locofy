@@ -30,6 +30,7 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestionFilter, setSuggestionFilter] = useState('');
   const [newPropertyName, setNewPropertyName] = useState('');
+  const [newPropertyValue, setNewPropertyValue] = useState('');
 
   const commonCSSProperties = [
     'display',
@@ -176,15 +177,14 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
 
   const addNewProperty = (propertyName?: string) => {
     const propName = propertyName || newPropertyName.trim();
-    if (propName) {
-      // Add the property with empty string value initially
-      handlePropertyChange(propName, '');
+    const propValue = newPropertyValue.trim();
+
+    if (propName && propValue) {
+      // Add the property with the provided value
+      handlePropertyChange(propName, propValue);
       setNewPropertyName('');
+      setNewPropertyValue('');
       setShowSuggestions(false);
-      // Automatically start editing the new property
-      setTimeout(() => {
-        setEditingProperty(propName);
-      }, 100);
     }
   };
 
@@ -285,14 +285,14 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
             <div className="w-4 h-4 mr-2 flex-shrink-0">
               <button
                 onClick={() => addNewProperty()}
-                disabled={!newPropertyName.trim()}
+                disabled={!newPropertyName.trim() || !newPropertyValue.trim()}
                 className="w-3 h-3 text-green-600 hover:text-green-800 disabled:text-gray-300"
                 title="Add property"
               >
                 +
               </button>
             </div>
-            <div className="flex-1 relative">
+            <div className="flex-1 relative flex items-center">
               <input
                 type="text"
                 value={newPropertyName}
@@ -302,13 +302,18 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
                   setShowSuggestions(e.target.value.length > 0);
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && newPropertyName.trim()) {
+                  if (
+                    e.key === 'Enter' &&
+                    newPropertyName.trim() &&
+                    newPropertyValue.trim()
+                  ) {
                     e.preventDefault();
                     addNewProperty();
                     setShowSuggestions(false);
                   } else if (e.key === 'Escape') {
                     setShowSuggestions(false);
                     setNewPropertyName('');
+                    setNewPropertyValue('');
                   }
                 }}
                 onFocus={() => {
@@ -323,12 +328,16 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
                   }, 150);
                 }}
                 placeholder="property-name"
-                className="w-full px-1 py-0 text-sm bg-transparent border-none outline-none focus:bg-blue-50 font-mono text-red-600"
+                className="flex-shrink-0 px-1 py-0 text-sm bg-transparent border-none outline-none focus:bg-blue-50 font-mono text-red-600"
+                style={{ width: '120px' }}
               />
 
               {/* Suggestions dropdown */}
               {showSuggestions && filteredSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded shadow-lg max-h-40 overflow-y-auto z-20 mt-1">
+                <div
+                  className="absolute top-full left-0 bg-white border border-gray-200 rounded shadow-lg max-h-40 overflow-y-auto z-20 mt-1"
+                  style={{ width: '120px' }}
+                >
                   {filteredSuggestions.slice(0, 8).map((suggestion) => (
                     <div
                       key={suggestion}
@@ -338,7 +347,8 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
                         e.preventDefault();
                       }}
                       onClick={() => {
-                        addNewProperty(suggestion);
+                        setNewPropertyName(suggestion);
+                        setShowSuggestions(false);
                       }}
                     >
                       {suggestion}
@@ -346,9 +356,32 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
                   ))}
                 </div>
               )}
+
+              <span className="text-gray-600 text-sm mx-1">:</span>
+
+              <input
+                type="text"
+                value={newPropertyValue}
+                onChange={(e) => setNewPropertyValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === 'Enter' &&
+                    newPropertyName.trim() &&
+                    newPropertyValue.trim()
+                  ) {
+                    e.preventDefault();
+                    addNewProperty();
+                  } else if (e.key === 'Escape') {
+                    setNewPropertyName('');
+                    setNewPropertyValue('');
+                  }
+                }}
+                placeholder="value"
+                className="flex-1 px-1 py-0 text-sm bg-transparent border-none outline-none focus:bg-blue-50 font-mono text-gray-900"
+              />
+
+              <span className="text-gray-600 text-sm">;</span>
             </div>
-            <span className="text-gray-600 text-sm">:</span>
-            <span className="text-gray-400 text-sm ml-1 italic">value;</span>
           </div>
         </div>
       </div>
