@@ -3,74 +3,11 @@ import { ChevronRight, ChevronDown, Eye } from 'lucide-react';
 import CSSInspector, { type Node } from './src/components/CSSInspector';
 import { excludedStyleProperties } from './src/constants/cssProperties';
 import { mockData } from './src/constants/mockData';
-
-// Optimized tree structure - only keeps relationships
-interface TreeNode {
-  id: string;
-  children: string[];
-}
-
-// Helper function to convert mock data to optimized structure
-const convertToOptimizedStructure = (mockData: Node) => {
-  const nodeMap = new Map<string, Node>();
-  const treeData = new Map<string, TreeNode>();
-
-  const traverse = (node: Node) => {
-    // Store node data in map
-    nodeMap.set(node.id, {
-      ...node,
-      children: [], // Remove children from node data
-    });
-
-    // Store tree structure separately
-    treeData.set(node.id, {
-      id: node.id,
-      children: node.children.map((child) => child.id),
-    });
-
-    // Recursively process children
-    node.children.forEach(traverse);
-  };
-
-  traverse(mockData);
-  return { nodeMap, treeData };
-};
-
-// Component detection logic - updated to work with optimized structure
-const detectComponents = (
-  nodeMap: Map<string, Node>,
-  treeData: Map<string, TreeNode>
-): Map<string, string[]> => {
-  const components = new Map<string, string[]>();
-  const nodesBySignature = new Map<string, Node[]>();
-
-  // Get all node IDs and process them
-  Array.from(nodeMap.keys()).forEach((nodeId) => {
-    const node = nodeMap.get(nodeId)!;
-    const treeNode = treeData.get(nodeId)!;
-
-    // Create signature based on type, dimensions, and structure
-    const signature = `${node.type}_${node.width}x${node.height}_${treeNode.children.length}`;
-
-    if (!nodesBySignature.has(signature)) {
-      nodesBySignature.set(signature, []);
-    }
-    nodesBySignature.get(signature)!.push(node);
-  });
-
-  let componentIndex = 1;
-  nodesBySignature.forEach((nodes, _signature) => {
-    if (nodes.length > 1) {
-      const componentName = `C${componentIndex++}`;
-      components.set(
-        componentName,
-        nodes.map((n) => n.id)
-      );
-    }
-  });
-
-  return components;
-};
+import {
+  detectComponents,
+  convertToOptimizedStructure,
+  type TreeNode,
+} from './src/utils/componentDetection';
 
 const TreeNodeComponent: React.FC<{
   nodeId: string;
