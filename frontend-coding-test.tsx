@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { ChevronRight, ChevronDown, Eye } from 'lucide-react';
 import CSSInspector, { type Node } from './src/components/CSSInspector';
+import { excludedStyleProperties } from './src/constants/cssProperties';
 
 // Optimized tree structure - only keeps relationships
 interface TreeNode {
@@ -338,6 +339,20 @@ const NodeRenderer: React.FC<{
     justifyContent: 'center',
   };
 
+  // Apply additional CSS properties from the node
+  Object.keys(node).forEach((key) => {
+    if (!excludedStyleProperties.includes(key)) {
+      const value = (node as any)[key];
+      if (value !== undefined && value !== null && value !== '') {
+        // Convert kebab-case to camelCase for React style properties
+        const camelCaseKey = key.replace(/-([a-z])/g, (_, letter) =>
+          letter.toUpperCase()
+        );
+        (baseStyle as any)[camelCaseKey] = value;
+      }
+    }
+  });
+
   const renderNodeContent = () => {
     switch (node.type) {
       case 'Input':
@@ -426,17 +441,13 @@ const NodeRenderer: React.FC<{
 
 export default function App() {
   // Initialize optimized state structure
-  const initialStructure = useMemo(
+  const { nodeMap: initialNodeMap, treeData } = useMemo(
     () => convertToOptimizedStructure(mockData),
     []
   );
 
-  const [nodeMap, setNodeMap] = useState<Map<string, Node>>(
-    initialStructure.nodeMap
-  );
-  const [treeData, setTreeData] = useState<Map<string, TreeNode>>(
-    initialStructure.treeData
-  );
+  const [nodeMap, setNodeMap] = useState<Map<string, Node>>(initialNodeMap);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
     new Set(['1', '2', '5', '8'])

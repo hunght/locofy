@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import {
+  commonCSSProperties,
+  displayValues,
+  excludedNodeProperties,
+} from '../constants/cssProperties';
 
 export type Node = {
   id: string;
@@ -32,86 +37,6 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
   const [newPropertyName, setNewPropertyName] = useState('');
   const [newPropertyValue, setNewPropertyValue] = useState('');
 
-  const commonCSSProperties = [
-    'display',
-    'position',
-    'top',
-    'right',
-    'bottom',
-    'left',
-    'width',
-    'height',
-    'max-width',
-    'max-height',
-    'min-width',
-    'min-height',
-    'margin',
-    'margin-top',
-    'margin-right',
-    'margin-bottom',
-    'margin-left',
-    'padding',
-    'padding-top',
-    'padding-right',
-    'padding-bottom',
-    'padding-left',
-    'background',
-    'background-color',
-    'background-image',
-    'background-size',
-    'color',
-    'font-size',
-    'font-weight',
-    'font-family',
-    'line-height',
-    'border',
-    'border-radius',
-    'border-top',
-    'border-right',
-    'border-bottom',
-    'border-left',
-    'text-align',
-    'text-decoration',
-    'text-transform',
-    'flex',
-    'flex-direction',
-    'justify-content',
-    'align-items',
-    'flex-wrap',
-    'grid',
-    'grid-template-columns',
-    'grid-template-rows',
-    'gap',
-    'opacity',
-    'visibility',
-    'overflow',
-    'z-index',
-    'cursor',
-    'transition',
-    'transform',
-    'box-shadow',
-    'outline',
-  ];
-
-  const displayValues = [
-    'block',
-    'inline',
-    'inline-block',
-    'flex',
-    'inline-flex',
-    'grid',
-    'inline-grid',
-    'table',
-    'inline-table',
-    'table-cell',
-    'table-row',
-    'list-item',
-    'none',
-    'contents',
-    'flow-root',
-    'math',
-  ];
-
   if (!selectedNode) {
     return (
       <div className="p-4 text-gray-500 text-sm">
@@ -135,19 +60,7 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
 
     // Add any additional properties that might exist on the node
     Object.keys(selectedNode).forEach((key) => {
-      if (
-        ![
-          'id',
-          'x',
-          'y',
-          'name',
-          'type',
-          'width',
-          'height',
-          'children',
-          'text',
-        ].includes(key)
-      ) {
+      if (!excludedNodeProperties.includes(key)) {
         const value = (selectedNode as any)[key];
         if (value !== undefined && value !== null && value !== '') {
           props[key] = value;
