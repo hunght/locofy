@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { Node } from '../types';
 import { CONSTANTS } from '../constants/appConstants';
 
 export interface UseTreeStateReturn {
@@ -45,30 +44,4 @@ export const useTreeState = (): UseTreeStateReturn => {
   };
 };
 
-export interface UseNodeUpdateReturn {
-  handleUpdateNode: (id: string, updates: Partial<Node>) => void;
-}
 
-export const useNodeUpdate = (
-  setNodeMap: React.Dispatch<React.SetStateAction<Map<string, Node>>>
-): UseNodeUpdateReturn => {
-  const handleUpdateNode = useCallback(
-    (id: string, updates: Partial<Node>) => {
-      setNodeMap((prevNodeMap) => {
-        const newNodeMap = new Map(prevNodeMap);
-        const existingNode = newNodeMap.get(id);
-
-        if (existingNode) {
-          newNodeMap.set(id, { ...existingNode, ...updates });
-        } else {
-          console.warn(`Node with ID ${id} not found for update.`);
-        }
-
-        return newNodeMap;
-      });
-    },
-    [setNodeMap]
-  );
-
-  return { handleUpdateNode };
-};

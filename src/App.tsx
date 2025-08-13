@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   detectComponents,
   convertToOptimizedStructure,
 } from './utils/componentDetection';
 import { mockData } from './constants/mockData';
 import { Node } from './types';
-import { useTreeState, useNodeUpdate } from './hooks/useAppState';
+import { useTreeState } from './hooks/useAppState';
 
 // Components
 import ErrorBoundary from './components/ErrorBoundary';
@@ -30,7 +30,25 @@ const App: React.FC = () => {
     handleToggle,
     clearSelection,
   } = useTreeState();
-  const { handleUpdateNode } = useNodeUpdate(setNodeMap);
+
+  // Simple inline node update logic instead of unnecessary hook wrapper
+  const handleUpdateNode = useCallback(
+    (id: string, updates: Partial<Node>) => {
+      setNodeMap((prevNodeMap) => {
+        const newNodeMap = new Map(prevNodeMap);
+        const existingNode = newNodeMap.get(id);
+
+        if (existingNode) {
+          newNodeMap.set(id, { ...existingNode, ...updates });
+        } else {
+          console.warn(`Node with ID ${id} not found for update.`);
+        }
+
+        return newNodeMap;
+      });
+    },
+    [setNodeMap]
+  );
 
   // Simple inline memoization instead of unnecessary hook wrapper
   const selectedNode = useMemo(() => {

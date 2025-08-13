@@ -29,9 +29,8 @@ This document outlines the refactoring of the original monolithic React componen
 ### 3. **State Management**
 
 - **Custom Hooks**: Extracted meaningful state logic into reusable hooks:
-  - `useTreeState` - Tree expansion and selection state
-  - `useNodeUpdate` - Node modification logic
-- **Simple Memoization**: Direct `useMemo` for simple computed values instead of unnecessary wrapper hooks
+  - `useTreeState` - Tree expansion and selection state with multiple related values
+- **Simple Memoization**: Direct `useMemo` and `useCallback` for simple computed values instead of unnecessary wrapper hooks
 - **State Locality**: State moved closer to where it's used
 
 ### 4. **Constants and Configuration**
