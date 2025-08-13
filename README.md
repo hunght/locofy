@@ -7,6 +7,8 @@ A sophisticated React TypeScript application for visualizing and inspecting UI c
 ![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)
 ![React](https://img.shields.io/badge/React-18.2-blue)
 
+## [Demo](https://www.loom.com/share/363dcc36db9345ada5fd654d77e35ac1?sid=66b097c0-f53f-457e-9790-fb2684464a63)
+
 ## 🚀 Features
 
 ### Core Functionality
