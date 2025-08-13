@@ -199,10 +199,7 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
                   setShowSuggestions(e.target.value.length > 0);
                 }}
                 onKeyDown={(e) => {
-                  if (
-                    e.key === 'Enter' &&
-                    newPropertyName.trim()
-                  ) {
+                  if (e.key === 'Enter' && newPropertyName.trim()) {
                     e.preventDefault();
                     addNewProperty();
                     setShowSuggestions(false);
@@ -260,10 +257,7 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
                 value={newPropertyValue}
                 onChange={(e) => setNewPropertyValue(e.target.value)}
                 onKeyDown={(e) => {
-                  if (
-                    e.key === 'Enter' &&
-                    newPropertyName.trim()
-                  ) {
+                  if (e.key === 'Enter' && newPropertyName.trim()) {
                     e.preventDefault();
                     addNewProperty();
                   } else if (e.key === 'Escape') {

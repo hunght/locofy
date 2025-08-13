@@ -1,0 +1,43 @@
+# Copilot Instructions for This Project
+
+When working on this React TypeScript project, follow these specific guidelines:
+
+## Abstraction Policy
+
+- **NO custom hooks for simple Map lookups, basic useCallback wrappers, or single useMemo operations**
+- **YES to custom hooks only when managing multiple related state values with complex interactions**
+- **Inline simple logic directly where it's used for better readability**
+
+## Component Architecture
+
+- Separate complex components into focused, single-responsibility modules
+- Use Error Boundaries to wrap component sections that might fail
+- Include proper TypeScript interfaces for all props
+- Add accessibility features (ARIA labels, keyboard navigation)
+
+## State Management
+
+- Keep state as local as possible
+- Use direct useMemo/useCallback instead of wrapper hooks for simple operations
+- Only create custom hooks for genuinely complex state management
+
+## Code Quality Standards
+
+- TypeScript interfaces required for all component props
+- Include error handling and null checks
+- Performance optimization with proper memoization
+- Comprehensive accessibility support
+
+## Testing Requirements
+
+- All components should be testable in isolation
+- Tests should cover main functionality and edge cases
+- Use React Testing Library best practices
+
+## Examples to Follow
+
+- `useTreeState` hook: ✅ Complex state with multiple related values
+- Inline `selectedNode` useMemo: ✅ Simple lookup logic
+- Removed `useSelectedNode` hook: ❌ Unnecessary abstraction
+
+Remember: **Simplicity and directness over premature abstraction**

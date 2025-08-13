@@ -26,7 +26,7 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({
   const isSelected = selectedId === nodeId;
   const isExpanded = expandedNodes.has(nodeId);
   const hasChildren = treeNode.children.length > 0;
-  
+
   // Simple inline component label lookup instead of unnecessary hook wrapper
   const componentLabel = useMemo(() => {
     for (const [label, nodeIds] of components.entries()) {
