@@ -4,23 +4,7 @@ import {
   displayValues,
   excludedNodeProperties,
 } from '../constants/cssProperties';
-
-export type Node = {
-  id: string;
-  x: number;
-  y: number;
-  name: string;
-  type: 'Div' | 'Input' | 'Image' | 'Button';
-  width: number;
-  height: number;
-  display?: string;
-  text?: string;
-  background?: string;
-  color?: string;
-  border?: string;
-  children: Node[];
-  [key: string]: any; // Allow additional CSS properties
-};
+import { Node } from '../types';
 
 export interface CSSInspectorProps {
   selectedNode: Node | null;
@@ -92,8 +76,8 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
     const propName = propertyName || newPropertyName.trim();
     const propValue = newPropertyValue.trim();
 
-    if (propName && propValue) {
-      // Add the property with the provided value
+    if (propName) {
+      // Add the property with the provided value (can be empty string)
       handlePropertyChange(propName, propValue);
       setNewPropertyName('');
       setNewPropertyValue('');
@@ -217,8 +201,7 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
                 onKeyDown={(e) => {
                   if (
                     e.key === 'Enter' &&
-                    newPropertyName.trim() &&
-                    newPropertyValue.trim()
+                    newPropertyName.trim()
                   ) {
                     e.preventDefault();
                     addNewProperty();
@@ -279,8 +262,7 @@ export const CSSInspector: React.FC<CSSInspectorProps> = ({
                 onKeyDown={(e) => {
                   if (
                     e.key === 'Enter' &&
-                    newPropertyName.trim() &&
-                    newPropertyValue.trim()
+                    newPropertyName.trim()
                   ) {
                     e.preventDefault();
                     addNewProperty();

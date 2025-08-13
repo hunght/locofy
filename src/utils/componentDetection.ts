@@ -1,4 +1,4 @@
-import { type Node } from '../components/CSSInspector';
+import { Node } from '../types';
 
 // Optimized tree structure - only keeps relationships
 export interface TreeNode {
@@ -21,11 +21,11 @@ export const convertToOptimizedStructure = (mockData: Node) => {
     // Store tree structure separately
     treeData.set(node.id, {
       id: node.id,
-      children: node.children.map((child) => child.id),
+      children: node.children?.map((child) => child.id) || [],
     });
 
     // Recursively process children
-    node.children.forEach(traverse);
+    node.children?.forEach(traverse);
   };
 
   traverse(mockData);
