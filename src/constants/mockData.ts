@@ -1,4 +1,4 @@
-import { Node } from '../components/CSSInspector';
+import { Node } from '../types';
 
 // Original mock data for testing (keeping original structure for initial conversion)
 export const originalMockData: Node = {

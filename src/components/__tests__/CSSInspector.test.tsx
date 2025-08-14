@@ -1,7 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
-import CSSInspector, { type Node } from '../CSSInspector';
+import CSSInspector from '../CSSInspector';
+import { type Node } from '../../types';
 
 // Mock node for testing
 const mockNode: Node = {

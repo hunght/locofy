@@ -23,9 +23,13 @@
         "noFallthroughCasesInSwitch": true
     },
     "include": [
-        "src",
-        "*.ts",
-        "*.tsx"
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "*.config.ts",
+        "*.config.js"
     ],
     "references": [
         {

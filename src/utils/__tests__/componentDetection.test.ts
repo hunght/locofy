@@ -4,7 +4,7 @@ import {
   convertToOptimizedStructure,
   type TreeNode,
 } from '../componentDetection';
-import { type Node } from '../../components/CSSInspector';
+import { type Node } from '../../types';
 import { stressTestMockData } from '../../constants/mockData';
 
 describe('detectComponents', () => {
