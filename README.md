@@ -110,6 +110,7 @@ The application will be available at `http://localhost:3000` (or next available 
 ### Core Documentation
 
 - **[Component Detection Guide](./README-Component-Detection.md)**: Detailed explanation of the intelligent component detection system
+- **[Node Grouping Algorithm](./README-Node-Grouping-Algorithm.md)**: Comprehensive documentation of the multi-dimensional similarity analysis and automated component grouping system
 - **[Performance Results](./PERFORMANCE-RESULTS.md)**: Comprehensive performance benchmarks and stress test results
 - **[Refactoring Guide](./REFACTORING-GUIDE.md)**: Complete refactoring methodology and best practices applied
 
