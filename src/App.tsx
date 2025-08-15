@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { convertToOptimizedStructure } from './utils/componentDetection';
 import { groupSimilarNodesFromTree } from './utils/groupingComponent';
-import { mockData } from './constants/mockData';
+
 import { Node } from './types';
 import { useTreeState } from './hooks/useAppState';
 
@@ -10,11 +10,12 @@ import ErrorBoundary from './components/ErrorBoundary';
 import TreeViewPanel from './components/TreeViewPanel';
 import PreviewPanel from './components/PreviewPanel';
 import InspectorPanel from './components/InspectorPanel';
+import { groupingDemoMockData } from './constants/groupingDemoMockData';
 
 const App: React.FC = () => {
   // Initialize optimized state structure
   const { nodeMap: initialNodeMap, treeData } = useMemo(
-    () => convertToOptimizedStructure(mockData),
+    () => convertToOptimizedStructure(groupingDemoMockData),
     []
   );
 
@@ -55,7 +56,7 @@ const App: React.FC = () => {
 
   // Memoized computed values using new functional grouping approach
   const components = useMemo(() => {
-    const nodeGroups = groupSimilarNodesFromTree(mockData);
+    const nodeGroups = groupSimilarNodesFromTree(groupingDemoMockData);
 
     // Convert NodeGroup[] to Map<string, string[]> format expected by UI
     const componentsMap = new Map<string, string[]>();
