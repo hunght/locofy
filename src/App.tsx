@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import {
-  detectComponents,
-  convertToOptimizedStructure,
-} from './utils/componentDetection';
+import { convertToOptimizedStructure } from './utils/componentDetection';
+import { groupSimilarNodesFromTree } from './utils/groupingComponent';
 import { mockData } from './constants/mockData';
 import { Node } from './types';
 import { useTreeState } from './hooks/useAppState';
@@ -55,11 +53,20 @@ const App: React.FC = () => {
     return selectedId ? nodeMap.get(selectedId) || null : null;
   }, [nodeMap, selectedId]);
 
-  // Memoized computed values
-  const components = useMemo(
-    () => detectComponents(nodeMap, treeData),
-    [nodeMap, treeData]
-  );
+  // Memoized computed values using new functional grouping approach
+  const components = useMemo(() => {
+    const nodeGroups = groupSimilarNodesFromTree(mockData);
+
+    // Convert NodeGroup[] to Map<string, string[]> format expected by UI
+    const componentsMap = new Map<string, string[]>();
+    nodeGroups.forEach((group, index) => {
+      const componentName = `${group.pattern}-${index + 1}`;
+      const nodeIds = group.nodes.map((node) => node.id);
+      componentsMap.set(componentName, nodeIds);
+    });
+
+    return componentsMap;
+  }, []);
 
   const handleSelection = (id: string) => {
     if (id === '') {

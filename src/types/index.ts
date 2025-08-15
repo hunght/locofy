@@ -12,7 +12,7 @@ export interface Node {
   border?: string;
   text?: string;
   display?: string;
-  children?: Node[]; // Made optional for compatibility
+  children: Node[];
   [key: string]: any;
 }
 

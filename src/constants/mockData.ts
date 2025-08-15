@@ -570,5 +570,5 @@ export const performanceTestConfig = {
 
 // Default mock data (can be switched for performance testing)
 // Change this to test different scales: 'small', 'medium', 'large'
-const testScale: keyof typeof performanceTestConfig = 'large';
+const testScale: keyof typeof performanceTestConfig = 'small';
 export const mockData = performanceTestConfig[testScale];
