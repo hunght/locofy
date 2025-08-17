@@ -526,16 +526,6 @@ const calculateDimensionSimilarity = (dim1: number, dim2: number): number => {
 };
 
 /**
- * Calculate position similarity between nodes
- */
-const calculatePositionSimilarity = (node1: Node, node2: Node): number => {
-  const xSim = calculateDimensionSimilarity(node1.x, node2.x);
-  const ySim = calculateDimensionSimilarity(node1.y, node2.y);
-
-  return (xSim + ySim) / 2.0;
-};
-
-/**
  * Calculate content similarity between nodes
  */
 const calculateContentSimilarity = (node1: Node, node2: Node): number => {
