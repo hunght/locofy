@@ -5,6 +5,7 @@ import {
   STYLE_WEIGHT,
   LAYOUT_WEIGHT,
   CONTENT_WEIGHT,
+  CHILDLESS_DIV_THRESHOLD_INCREASE,
 } from './groupingComponent.config';
 export interface NodeGroup {
   id: string;
@@ -86,6 +87,19 @@ const flattenNodeTree = (node: Node): Node[] => {
 };
 
 /**
+ * Get the similarity threshold for a specific node type
+ */
+const getSimilarityThreshold = (node: Node): number => {
+  // For div elements without children, use a higher threshold
+  // This makes them harder to group unless they're very similar
+  if (node.type === 'Div' && (!node.children || node.children.length === 0)) {
+    return SIMILARITY_THRESHOLD + CHILDLESS_DIV_THRESHOLD_INCREASE;
+  }
+
+  return SIMILARITY_THRESHOLD;
+};
+
+/**
  * Main function to group similar nodes from a flat array
  */
 export const groupSimilarNodes = (nodes: Node[]): NodeGroup[] => {
@@ -122,6 +136,7 @@ const findSimilarNodes = (
   processed: Set<string>
 ): Node[] => {
   const similarNodes: Node[] = [referenceNode];
+  const referenceThreshold = getSimilarityThreshold(referenceNode);
 
   for (const candidate of allNodes) {
     if (processed.has(candidate.id) || candidate.id === referenceNode.id) {
@@ -130,7 +145,11 @@ const findSimilarNodes = (
 
     const similarity = calculateSimilarity(referenceNode, candidate);
 
-    if (similarity >= SIMILARITY_THRESHOLD) {
+    // Use the higher threshold if either node is a childless div
+    const candidateThreshold = getSimilarityThreshold(candidate);
+    const effectiveThreshold = Math.max(referenceThreshold, candidateThreshold);
+
+    if (similarity >= effectiveThreshold) {
       similarNodes.push(candidate);
     }
   }
@@ -452,7 +471,15 @@ const compareHierarchy = (
  * Calculate style similarity between nodes
  */
 const calculateStyleSimilarity = (node1: Node, node2: Node): number => {
-  const styleProperties = ['background', 'color', 'border', 'display'];
+  const styleProperties = [
+    'background',
+    'color',
+    'border',
+    'display',
+    'font-size',
+    'font-weight',
+    'line-height',
+  ];
   let styleScore = 0;
   let totalProperties = 0;
 
@@ -478,9 +505,8 @@ const calculateStyleSimilarity = (node1: Node, node2: Node): number => {
 const calculateLayoutSimilarity = (node1: Node, node2: Node): number => {
   const widthSim = calculateDimensionSimilarity(node1.width, node2.width);
   const heightSim = calculateDimensionSimilarity(node1.height, node2.height);
-  const positionSim = calculatePositionSimilarity(node1, node2);
 
-  return (widthSim + heightSim + positionSim) / 3.0;
+  return (widthSim + heightSim) / 2.0;
 };
 
 /**

@@ -100,6 +100,7 @@ The most critical dimension, focusing on DOM hierarchy and element relationships
 #### Component-Specific Logic:
 
 **Buttons**: Flexible child matching to handle icon variations
+
 ```typescript
 // Buttons with 0-1 children (text vs text+icon) = 90% similarity
 // Child difference of 1 (likely icon) = 80% similarity
@@ -107,12 +108,14 @@ The most critical dimension, focusing on DOM hierarchy and element relationships
 ```
 
 **Divs**: Strict structural matching for container elements
+
 ```typescript
 // Exact child count match = high similarity
 // Gradual falloff for count differences
 ```
 
 **Inputs**: Form-specific matching logic
+
 ```typescript
 // Input type and attributes must match closely
 // Placeholder and validation patterns considered
@@ -123,17 +126,19 @@ The most critical dimension, focusing on DOM hierarchy and element relationships
 Analyzes spatial relationships and positioning patterns:
 
 #### Dimension Matching:
+
 - **Size Tolerance**: ±20% variance allowed for width/height
 - **Aspect Ratio**: Maintained across similar components
 - **Position Patterns**: Relative positioning within containers
 
 #### Position Pattern Analysis:
+
 ```typescript
 interface PositionPattern {
-  averageX: number;     // Mean X coordinate
-  averageY: number;     // Mean Y coordinate  
-  xVariance: number;    // X-axis position variance
-  yVariance: number;    // Y-axis position variance
+  averageX: number; // Mean X coordinate
+  averageY: number; // Mean Y coordinate
+  xVariance: number; // X-axis position variance
+  yVariance: number; // Y-axis position variance
 }
 ```
 
@@ -142,12 +147,14 @@ interface PositionPattern {
 Compares visual properties with semantic understanding:
 
 #### Key Style Properties:
+
 - **Background**: Colors, gradients, images
 - **Typography**: Font size, weight, color
 - **Borders**: Style, width, radius
 - **Display**: Layout method (flex, block, inline)
 
 #### Color Analysis:
+
 - **Semantic matching**: Primary, secondary, accent colors
 - **Shade variations**: Different tones of the same color family
 - **Contrast patterns**: Text/background relationships
@@ -157,6 +164,7 @@ Compares visual properties with semantic understanding:
 Evaluates textual and semantic content:
 
 #### Text Analysis:
+
 - **Length patterns**: Similar character counts
 - **Semantic categories**: Actions (Save, Submit), Navigation (Home, About)
 - **Format patterns**: Titles, labels, descriptions
@@ -168,6 +176,7 @@ Evaluates textual and semantic content:
 Buttons have specialized logic to handle common variations:
 
 #### Icon Handling:
+
 ```typescript
 const isLikelyIconDifference = (node1: Node, node2: Node): boolean => {
   // Detects if child difference is likely an icon addition
@@ -177,8 +186,9 @@ const isLikelyIconDifference = (node1: Node, node2: Node): boolean => {
 ```
 
 #### Button Categories:
+
 - **Primary Actions**: Save, Submit, Confirm
-- **Secondary Actions**: Cancel, Reset, Clear  
+- **Secondary Actions**: Cancel, Reset, Clear
 - **Navigation**: Next, Previous, Back
 - **Social**: Share, Like, Follow
 
@@ -187,6 +197,7 @@ const isLikelyIconDifference = (node1: Node, node2: Node): boolean => {
 Cards use container-based similarity:
 
 #### Card Structure:
+
 - **Header sections**: Titles, metadata
 - **Content areas**: Description, images
 - **Action sections**: Buttons, links
@@ -197,6 +208,7 @@ Cards use container-based similarity:
 Form inputs have strict validation requirements:
 
 #### Input Validation:
+
 - **Type matching**: text, email, password, etc.
 - **Validation patterns**: Required fields, format restrictions
 - **Label associations**: Connected form labels
@@ -207,17 +219,17 @@ Form inputs have strict validation requirements:
 ### Similarity Weights
 
 ```typescript
-export const STRUCTURE_WEIGHT = 0.6;  // Structural similarity importance
-export const STYLE_WEIGHT = 0.1;      // Visual property importance  
-export const LAYOUT_WEIGHT = 0.2;     // Spatial relationship importance
-export const CONTENT_WEIGHT = 0.1;    // Content similarity importance
+export const STRUCTURE_WEIGHT = 0.6; // Structural similarity importance
+export const STYLE_WEIGHT = 0.1; // Visual property importance
+export const LAYOUT_WEIGHT = 0.2; // Spatial relationship importance
+export const CONTENT_WEIGHT = 0.1; // Content similarity importance
 export const SIMILARITY_THRESHOLD = 0.75; // Minimum similarity for grouping
 ```
 
 ### Tuning Guidelines:
 
 - **Increase STRUCTURE_WEIGHT** for strict component matching
-- **Increase LAYOUT_WEIGHT** for position-sensitive layouts  
+- **Increase LAYOUT_WEIGHT** for position-sensitive layouts
 - **Increase STYLE_WEIGHT** for design system consistency
 - **Lower SIMILARITY_THRESHOLD** for broader grouping
 - **Raise SIMILARITY_THRESHOLD** for stricter component detection
@@ -228,11 +240,11 @@ export const SIMILARITY_THRESHOLD = 0.75; // Minimum similarity for grouping
 
 ```typescript
 export interface NodeGroup {
-  id: string;                    // Unique group identifier
-  pattern: string;               // Human-readable pattern description
-  nodes: Node[];                 // All nodes in this group
-  commonFeatures: Features;      // Shared characteristics
-  variations: Variation[];       // Detected variations within group
+  id: string; // Unique group identifier
+  pattern: string; // Human-readable pattern description
+  nodes: Node[]; // All nodes in this group
+  commonFeatures: Features; // Shared characteristics
+  variations: Variation[]; // Detected variations within group
 }
 ```
 
@@ -240,9 +252,9 @@ export interface NodeGroup {
 
 ```typescript
 export interface Features {
-  structure: StructureSignature;    // DOM structure information
+  structure: StructureSignature; // DOM structure information
   styleProperties: StyleProperties; // Common visual properties
-  dimensions: DimensionRange;       // Size constraints
+  dimensions: DimensionRange; // Size constraints
   positionPattern: PositionPattern; // Spatial arrangement
 }
 ```
@@ -251,9 +263,9 @@ export interface Features {
 
 ```typescript
 export interface Variation {
-  type: string;          // Variation category (e.g., "with-icon", "large-size")
-  description: string;   // Human-readable description
-  examples: Node[];      // Example nodes showing this variation
+  type: string; // Variation category (e.g., "with-icon", "large-size")
+  description: string; // Human-readable description
+  examples: Node[]; // Example nodes showing this variation
 }
 ```
 
@@ -268,11 +280,13 @@ import { groupSimilarNodesFromTree } from './utils/groupingComponent';
 const nodeGroups = groupSimilarNodesFromTree(rootNode);
 
 // Process results
-nodeGroups.forEach(group => {
-  console.log(`Found ${group.nodes.length} similar ${group.pattern} components`);
-  
+nodeGroups.forEach((group) => {
+  console.log(
+    `Found ${group.nodes.length} similar ${group.pattern} components`
+  );
+
   // Analyze variations
-  group.variations.forEach(variation => {
+  group.variations.forEach((variation) => {
     console.log(`  - ${variation.type}: ${variation.description}`);
   });
 });
@@ -282,7 +296,7 @@ nodeGroups.forEach(group => {
 
 ```typescript
 // Filter groups by minimum size
-const significantGroups = nodeGroups.filter(group => group.nodes.length >= 3);
+const significantGroups = nodeGroups.filter((group) => group.nodes.length >= 3);
 
 // Find the most common component patterns
 const sortedGroups = nodeGroups.sort((a, b) => b.nodes.length - a.nodes.length);
@@ -302,6 +316,7 @@ const componentCandidates = sortedGroups.slice(0, 10); // Top 10 patterns
 ### Optimization Strategies
 
 #### Early Termination:
+
 ```typescript
 // Skip obviously different nodes early
 if (node1.type !== node2.type) return 0.0;
@@ -309,6 +324,7 @@ if (Math.abs(node1.width - node2.width) > node1.width * 0.5) return 0.0;
 ```
 
 #### Caching:
+
 ```typescript
 // Cache expensive calculations
 const featureCache = new Map<string, Features>();
@@ -316,6 +332,7 @@ const similarityCache = new Map<string, number>();
 ```
 
 #### Batching:
+
 ```typescript
 // Process nodes in batches for large datasets
 const batchSize = 100;
@@ -333,6 +350,7 @@ const batches = chunk(nodes, batchSize);
 ### Unit Tests
 
 #### Feature Extraction:
+
 ```typescript
 describe('getStructureSignature', () => {
   it('should extract correct structure for buttons', () => {
@@ -344,6 +362,7 @@ describe('getStructureSignature', () => {
 ```
 
 #### Similarity Calculation:
+
 ```typescript
 describe('calculateSimilarity', () => {
   it('should return high similarity for identical buttons', () => {
@@ -356,6 +375,7 @@ describe('calculateSimilarity', () => {
 ### Integration Tests
 
 #### End-to-End Grouping:
+
 ```typescript
 describe('groupSimilarNodes', () => {
   it('should group button variations correctly', () => {
@@ -370,13 +390,14 @@ describe('groupSimilarNodes', () => {
 ### Performance Tests
 
 #### Large Dataset Handling:
+
 ```typescript
 describe('Performance Tests', () => {
   it('should handle 1000+ nodes within reasonable time', () => {
     const startTime = performance.now();
     const groups = groupSimilarNodes(largeNodeSet);
     const endTime = performance.now();
-    
+
     expect(endTime - startTime).toBeLessThan(5000); // 5 seconds max
   });
 });
@@ -387,16 +408,19 @@ describe('Performance Tests', () => {
 ### Common Issues
 
 #### Low Grouping Rate:
+
 - **Check similarity threshold**: May be too high
 - **Verify node structure**: Ensure consistent data format
 - **Review weight distribution**: Adjust for your use case
 
 #### False Positives:
+
 - **Increase similarity threshold**: Require stricter matching
 - **Add component-specific logic**: Handle edge cases
 - **Improve feature extraction**: More discriminative signatures
 
 #### Performance Problems:
+
 - **Enable caching**: Cache expensive calculations
 - **Reduce dataset size**: Pre-filter nodes
 - **Optimize similarity calculation**: Early termination strategies
@@ -404,6 +428,7 @@ describe('Performance Tests', () => {
 ### Debugging Tools
 
 #### Similarity Analysis:
+
 ```typescript
 // Debug similarity calculation breakdown
 const debugSimilarity = (node1: Node, node2: Node) => {
@@ -411,13 +436,13 @@ const debugSimilarity = (node1: Node, node2: Node) => {
   const layout = calculateLayoutSimilarity(node1, node2);
   const style = calculateStyleSimilarity(node1, node2);
   const content = calculateContentSimilarity(node1, node2);
-  
+
   console.log({
     structural: structural * STRUCTURE_WEIGHT,
-    layout: layout * LAYOUT_WEIGHT,  
+    layout: layout * LAYOUT_WEIGHT,
     style: style * STYLE_WEIGHT,
     content: content * CONTENT_WEIGHT,
-    total: calculateSimilarity(node1, node2)
+    total: calculateSimilarity(node1, node2),
   });
 };
 ```
@@ -444,4 +469,4 @@ const debugSimilarity = (node1: Node, node2: Node) => {
 
 ---
 
-*This document provides a comprehensive guide to understanding and extending the Node Grouping Algorithm. For implementation details, see the source code in `/src/utils/groupingComponent.ts`.*
+_This document provides a comprehensive guide to understanding and extending the Node Grouping Algorithm. For implementation details, see the source code in `/src/utils/groupingComponent.ts`._
